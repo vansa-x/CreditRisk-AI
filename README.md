@@ -49,5 +49,3 @@ python -m streamlit run app.py
 * **Machine Learning:** XGBoost, Scikit-Learn, Imbalanced-Learn (SMOTE)
 * **Explainable AI:** SHAP
 * **Data Processing:** Pandas, NumPy
-
-```
