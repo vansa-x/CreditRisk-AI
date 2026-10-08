@@ -1,0 +1,52 @@
+import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+import shap
+
+def train_models(X_train, y_train):
+    """
+    Executes robust hyperparameter tuning and cross-validation 
+    for foundational Decision Automation models.
+    """
+    cv_strategy = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+    # XGBoost Tuning
+    xgb_param_grid = {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [3, 5, 7],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'subsample': [0.7, 0.8, 1.0],
+        'colsample_bytree': [0.7, 0.8, 1.0]
+    }
+    xgb_base = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+    xgb_search = RandomizedSearchCV(
+        estimator=xgb_base, param_distributions=xgb_param_grid, 
+        n_iter=10, scoring='roc_auc', cv=cv_strategy, random_state=42, n_jobs=-1
+    )
+    xgb_search.fit(X_train, y_train)
+
+    return xgb_search.best_estimator_
+
+def generate_shap_explainer(model):
+    """
+    Generates TreeExplainer for compliance audit trails.
+    """
+    explainer = shap.TreeExplainer(model)
+    return explainer
+
+def calculate_roi_metrics(probability_of_default, loan_amount, guarantee_pct, interest_rate):
+    """
+    Translates model probabilities into executive Expected Value (EV) metrics.
+    """
+    expected_loss = probability_of_default * loan_amount * (1 - guarantee_pct)
+    expected_revenue = (1 - probability_of_default) * (loan_amount * interest_rate)
+    
+    recommendation = "Reject" if expected_loss > expected_revenue else "Approve"
+    net_value = expected_revenue - expected_loss
+    
+    return {
+        "Expected Loss": expected_loss,
+        "Expected Revenue": expected_revenue,
+        "Net Expected Value": net_value,
+        "Recommendation": recommendation
+    }
