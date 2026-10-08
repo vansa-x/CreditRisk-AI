@@ -51,5 +51,3 @@ python -m streamlit run app.py
 * **Data Processing:** Pandas, NumPy
 
 ```
-
-```
