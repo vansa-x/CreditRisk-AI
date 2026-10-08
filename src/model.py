@@ -18,7 +18,7 @@ def train_models(X_train, y_train):
         'subsample': [0.7, 0.8, 1.0],
         'colsample_bytree': [0.7, 0.8, 1.0]
     }
-    xgb_base = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+    xgb_base = xgb.XGBClassifier(eval_metric='logloss', random_state=42)
     xgb_search = RandomizedSearchCV(
         estimator=xgb_base, param_distributions=xgb_param_grid, 
         n_iter=10, scoring='roc_auc', cv=cv_strategy, random_state=42, n_jobs=-1
